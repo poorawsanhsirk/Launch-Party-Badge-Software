@@ -16,7 +16,9 @@
 class LP5860 {
 private:
     TwoWire* wire;
-    // uint8_t deviceAddress;
+    uint8_t deviceAddressbits;
+    // Constants that might be needed
+    T_CHIP_EN_US = 100;                 // Time to wait in microseconds after enabling the chip
 
     enum Registers: uint16_t {
         // Device Control Registers
@@ -81,6 +83,44 @@ private:
         return static_cast<uint16_t>(Registers::DOT_GROUP_SELECT_START) + dot;
     }
 
+    // BitFlags Enum for register bitfields
+    enum BitFlags : uint8_t {
+        CHIP_EN_CHIP_EN = (1 << 0),
+
+        DEV_INITIAL_PWM_FREQ = (1 << 0),
+        DEV_INITIAL_DATA_REF_MODE_SHIFT = 1,
+        DEV_INITIAL_DATA_REF_MODE_MASK = 0b11,
+        DEV_INITIAL_MAX_LINE_NUM_SHIFT = 3,
+        DEV_INITIAL_MAX_LINE_NUM_MASK = 0b1111,
+
+        DEV_CONFIG1_CS_ON_SHIFT = (1 << 0),
+        DEV_CONFIG1_PWM_PHASE_SHIFT = (1 << 1),
+        DEV_CONFIG1_PWM_SCALE_MODE = (1 << 2),
+        DEV_CONFIG1_SW_BLK = (1 << 3),
+
+        DEV_CONFIG2_LSD_REMOVAL = (1 << 0),
+        DEV_CONFIG2_LOD_REMOVAL = (1 << 1),
+        DEV_CONFIG2_COMP_GROUP1_SHIFT = 2,
+        DEV_CONFIG2_COMP_GROUP1_MASK = 0b11,
+        DEV_CONFIG2_COMP_GROUP2_SHIFT = 4,
+        DEV_CONFIG2_COMP_GROUP2_MASK = 0b11,
+        DEV_CONFIG2_COMP_GROUP3_SHIFT = 6,
+        DEV_CONFIG2_COMP_GROUP3_MASK = 0b11,
+
+        DEV_CONFIG3_UP_DEGHOST_ENABLE = (1 << 0),
+        DEV_CONFIG3_MAXIMUM_CURRENT_SHIFT = 1,
+        DEV_CONFIG3_MAXUMUM_CURRENT_MASK = 0b111,
+        DEV_CONFIG3_UP_DEGHOST_SHIFT = 4,
+        DEV_CONFIG3_UP_DEGHOST_MASK = 0b11,
+        DEV_CONFIG3_DOWN_DEGHOST_SHIFT = 6,
+        DEV_CONFIG3_DOWN_DEGHOST_MASK = 0b11,
+
+        FAULT_STATE_GLOBAL_LSD = (1 << 0),
+        FAULT_STATE_GLOBAL_LOD = (1 << 1)
+    };
+
+    
+
     // Method to write a value to a register with custom addressing
     void writeRegister(Registers reg, uint8_t value) {
         uint8_t addrByte1 = 0x00;  // Initialize the first address byte
@@ -120,7 +160,120 @@ private:
     }
 public:
     // Constructor to initialize the I2C communication
-    LP5860(TwoWire* wire, uint8_t deviceAddress) : wire(wire), deviceAddress(deviceAddress) {}
+    LP5860(TwoWire* wire, uint8_t deviceAddressbits) : wire(wire), deviceAddressbits(deviceAddressbits) {}
+
+    // Output PWM Frequency Setting
+    enum PwmFrequency {
+        Pwm125kHz,   // 125 kHz
+        Pwm62_5kHz   // 62.5 kHz
+    };
+
+    // Line Switch Blanking Time Setting
+    enum LineBlankingTime {
+        Blank1us,               // 1us 
+        Blanks0_5us             // 0.5us
+    };
+
+    // Dimming Scale Setting of Final PWM Generator
+    enum PwmScaleMode {
+        Linear,                 // Linear Scale Dimming Curve
+        Exponential             // Exponential Scale Dimming Curve
+    };
+
+    // Downside deghosting level selection
+    enum DownDegHost:uint8_t {
+        None    = 0x00,
+        Weak    = 0x01,
+        Medium  = 0x02,
+        Strong  = 0x03
+    };
+    // Scan line clamp voltage of upside deghosting
+    enum UpDegHost:uint8_t {
+        VledMinus2V     = 0x00,
+        VledMinus2_5V   = 0x01,
+        VledMinus3V     = 0x02,
+        GND             = 0x03
+    };
+
+    // Data Refresh Mode Selection
+    enum DataRefMode:uint8_t {
+        Mode1 = 0x00,           // 
+        Mode2 = 0x01,
+        Mode3 = 0x02
+    };
+
+    // Maximum Current Setting
+    enum CurrentSetting {
+        Max3mA  = 0x00,
+        Max5mA  = 0x01,
+        Max10mA = 0x02,
+        Max15mA = 0x03,
+        Max20mA = 0x04,
+        Max30mA = 0x05,
+        Max40mA = 0x06,
+        Max50mA = 0x07
+    };
+
+    /** 
+    *  Initialization Method
+    */
+
+
+    /**
+    *  Chip Enable Method
+    */
+
+    /**
+    *  Set Device Configuration Method
+    */
+
+    /**
+     * Reset Method
+     */
+
+    /**
+     * Set Dot Groups Method
+     */
+
+    /**
+     * Set Dot Current Method
+     */
+
+    /**
+     * Set Global Brightness Method
+     */
+
+    /**
+     * Set Group Brightness Method
+     */
+
+    /**
+     * Get Global Fault Status Method
+     */
+
+    /**
+     * Get LED Open Status Method
+     */
+
+    /**
+     * Get LED Short Status Method
+     */
+
+    /**
+     * Clear LED Open Fault Method
+     */
+
+    /**
+     * Clear LED Short Fault Method
+     */
+
+    /**
+     * Write Frame to 11 x 6 LED MAtrix
+     */
+
+    /**
+     * Or do we want to make a class which internally instantiates 4 of the LP5860 sub-classes??????
+     */
 
     
 }
