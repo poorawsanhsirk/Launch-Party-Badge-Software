@@ -255,13 +255,13 @@ void LP586x::Device_LED_Dot_Brightness_8bit(uint8_t Dot,
     LP586X_i2c_obj.writeRegister (LED_Dot_Brightness_Register_Start+3*Dot,
                R_PWM);
 
-//    LP586X_i2c_obj.setSlave (_slave_address,
-//                  LED_Dot_Brightness_Register_Start+3*Dot+1);
+   LP586X_i2c_obj.setSlave (_slave_address,
+                 LED_Dot_Brightness_Register_Start+3*Dot+1);
     LP586X_i2c_obj.writeRegister (LED_Dot_Brightness_Register_Start+3*Dot+1,
                G_PWM);
 
-//    LP586X_i2c_obj.setSlave (_slave_address,
-//                  LED_Dot_Brightness_Register_Start+3*Dot+2);
+   LP586X_i2c_obj.setSlave (_slave_address,
+                 LED_Dot_Brightness_Register_Start+3*Dot+2);
     LP586X_i2c_obj.writeRegister (LED_Dot_Brightness_Register_Start+3*Dot+2,
                B_PWM);
 }
@@ -279,15 +279,15 @@ void LP586x::Device_LED_Dot_Brightness_16bit(uint8_t Dot,
     LP586X_i2c_obj.writeRegister (LED_Dot_Brightness_Register_Start+6*Dot+1,
                R_PWM>>8);
 
-//    LP586X_i2c_obj.setSlave (_slave_address,
-//                  LED_Dot_Brightness_Register_Start+6*Dot+2);
+   LP586X_i2c_obj.setSlave (_slave_address,
+                 LED_Dot_Brightness_Register_Start+6*Dot+2);
     LP586X_i2c_obj.writeRegister (LED_Dot_Brightness_Register_Start+6*Dot+2,
                G_PWM);
     LP586X_i2c_obj.writeRegister (LED_Dot_Brightness_Register_Start+6*Dot+3,
                G_PWM>>8);
 
-//    LP586X_i2c_obj.setSlave (_slave_address,
-//                  LED_Dot_Brightness_Register_Start+6*Dot+4);
+   LP586X_i2c_obj.setSlave (_slave_address,
+                 LED_Dot_Brightness_Register_Start+6*Dot+4);
     LP586X_i2c_obj.writeRegister (LED_Dot_Brightness_Register_Start+6*Dot+4,
                B_PWM);
     LP586X_i2c_obj.writeRegister (LED_Dot_Brightness_Register_Start+6*Dot+5,
