@@ -10,7 +10,7 @@ LP586x::LP586x(uint8_t slave_address, uint8_t sdaPin, uint8_t sclPin, uint8_t en
     LP586X_i2c_obj = LP586X_I2C(enablePin, syncPin);
     LP586X_i2c_obj.begin(sdaPin, sclPin);
     Chip_Normal();
-    delay(100);
+    // delay(100);
     Device_Initial(Max_Line_11, Mode_3_1, PWM_Frequency_125k);
     Device_Configuration_2(Comp_Group3_2clock, Comp_Group2_Off, Comp_Group1_Off, LOD_Removal_Off, LSD_Removal_Off);
 }
@@ -269,4 +269,4 @@ void LP586x::LSD_Clear()
                LSD_Clear_En);
 }
 
-void LP586x::ReadRegister(uint)
+// void LP586x::ReadRegister(uint)

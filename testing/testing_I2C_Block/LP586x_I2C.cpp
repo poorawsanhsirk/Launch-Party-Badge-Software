@@ -62,7 +62,7 @@ void LP586X_I2C::writeRegister(uint16_t regAddr10bit, uint8_t data) {
     delayMicroseconds(5);
 }
 
-uint8_t LP586X_I2C::readRegister(uint16_t regAddr10bit) {
+uint8_t LP586X_I2C::readRegister(uint8_t regAddr10bit) {
     uint8_t regAddr8bit = regAddr10bit & 0xFF;
     uint8_t value = 0;
     

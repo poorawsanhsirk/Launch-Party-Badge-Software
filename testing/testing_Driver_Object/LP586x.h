@@ -178,9 +178,10 @@ extern "C"
 class LP586x {
     private:
         uint8_t _slave_address;
-        LP586X_I2C LP586X_i2c_obj;
+        // LP586X_I2C LP586X_i2c_obj;
     public:
-        LP586x() {};   
+        LP586x() {};
+        LP586X_I2C LP586X_i2c_obj;   
         LP586x(uint8_t slave_address, uint8_t sdaPin, uint8_t sclPin, uint8_t enablePin, uint8_t syncPin);
         void Chip_Standby();
         void Chip_Normal();

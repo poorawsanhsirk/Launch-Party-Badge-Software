@@ -48,11 +48,11 @@ class LP586X_I2C {
         void writeRegister(uint16_t regAddr10bit, uint8_t data);
         
         /**
-         * Read 8-bit data from a register
+         * Read 16-bit data from a register
          * @param regAddr10bit 10-bit register address
-         * @return 8-bit value read from register
+         * @return 16-bit value read from register
          */
-        uint8_t readRegister(uint16_t regAddr10bit);
+        uint8_t readRegister(uint8_t regAddr10bit);
         
         /**
          * Disable the device (pull enable pin low)

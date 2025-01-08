@@ -31,7 +31,8 @@ void LP586X_I2C::begin(uint8_t sdaPin, uint8_t sclPin) {
     // Set initial pin states
     digitalWrite(_syncPin, LOW);
     digitalWrite(_enablePin, LOW);  // Start with device disabled
-    delay(100);
+    // delay(100);
+    delayMicroseconds(5);
     digitalWrite(_enablePin, HIGH);  // Start with device disabled
     // digitalWrite(_ifsPin, LOW);     // Default to I2C mode
     // delay(1);
@@ -62,7 +63,7 @@ void LP586X_I2C::writeRegister(uint16_t regAddr10bit, uint8_t data) {
     delayMicroseconds(5);
 }
 
-uint8_t LP586X_I2C::readRegister(uint16_t regAddr10bit) {
+uint8_t LP586X_I2C::readRegister(uint8_t regAddr10bit) {
     uint8_t regAddr8bit = regAddr10bit & 0xFF;
     uint8_t value = 0;
     

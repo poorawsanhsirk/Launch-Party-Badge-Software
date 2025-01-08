@@ -1,5 +1,5 @@
-// #include "LED_Animation.h"
-// #include "LP586x.h"
+#include "LED_Animation.h"
+#include "LP586x.h"
 #include "Wire.h"
 #include <stdint.h>
 
@@ -39,26 +39,13 @@ void setup() {
   delay(100);
   digitalWrite(1, HIGH);
 
-  // Write to the device to Enable Chip
   Wire.beginTransmission(0x40); // Start transmission to slave with address 0x40
   Wire.write(0x00);             // Write the register address (0x00)
   Wire.write(0x00);             // Write data to the register
   Wire.endTransmission();       // End transmission
 
   // Write to the device to Enable Chip
-  Wire.beginTransmission(0x44); // Start transmission to slave with address 0x40
-  Wire.write(0x00);             // Write the register address (0x00)
-  Wire.write(0x00);             // Write data to the register
-  Wire.endTransmission();       // End transmission
-
-  // Write to the device to Enable Chip
   Wire.beginTransmission(0x40); // Start transmission to slave with address 0x40
-  Wire.write(0x00);             // Write the register address (0x00)
-  Wire.write(0x01);             // Write data to the register
-  Wire.endTransmission();       // End transmission
-
-  // Write to the device to Enable Chip
-  Wire.beginTransmission(0x44); // Start transmission to slave with address 0x40
   Wire.write(0x00);             // Write the register address (0x00)
   Wire.write(0x01);             // Write data to the register
   Wire.endTransmission();       // End transmission
@@ -80,33 +67,12 @@ void setup() {
     Serial.println(registerValue);
   }
 
-  // Read from the device
-  Wire.beginTransmission(0x44); // Start transmission to slave with address 0x40
-  Wire.write(0x00);             // Point to the register address (0x01) to read
-
-  err = Wire.endTransmission(false);
-  Serial.print("Error Value: ");
-  Serial.println(err);
-
-  Wire.requestFrom(0x44, 1);    // Request 1 byte of data from the slave
-  if (Wire.available()) {       // Check if data is available
-    int registerValue = Wire.read(); // Read the data
-    Serial.print("Register Value: ");
-    Serial.println(registerValue);
-  }
-
   
   // Light up one LED (L0-CS0)
   // Enter Mode-1
   Wire.beginTransmission(0x40); // Start transmission to slave with address 0x40
   Wire.write(0x01);             // Write the register address (0x01)
   uint8_t data = (0xB<<3) + (0x0<<1) + 0x0; // Setting Mode to Mode 1
-  Wire.write(data);             // Write data to the register
-  Wire.endTransmission();       // End transmission
-
-  Wire.beginTransmission(0x44); // Start transmission to slave with address 0x40
-  Wire.write(0x01);             // Write the register address (0x01)
-  data = (0xB<<3) + (0x0<<1) + 0x0; // Setting Mode to Mode 1
   Wire.write(data);             // Write data to the register
   Wire.endTransmission();       // End transmission
 
@@ -122,39 +88,9 @@ void setup() {
     Serial.println(registerValue);
   }
 
-  Wire.beginTransmission(0x44); // Start transmission to slave with address 0x40
-  Wire.write(0x01);             // Point to the register address (0x01) to read
-
-  Wire.endTransmission(false);
-  Wire.requestFrom(0x44, 1);    // Request 1 byte of data from the slave
-  if (Wire.available()) {       // Check if data is available
-    int registerValue = Wire.read(); // Read the data
-    Serial.print("Register Value: ");
-    Serial.println(registerValue);
-  }
-
   // Set Individual 8-bit Dot Current Setting
   Wire.beginTransmission(0x41); // Start transmission to slave with address 0x40
   Wire.write(0x02);             // Write the register address (0x00)
-  data = 0xFF; // Setting Mode to Mode 1
-  Wire.write(data);             // Write data to the register
-  Wire.endTransmission();       // End transmission
-
-  Wire.beginTransmission(0x45); // Start transmission to slave with address 0x40
-  Wire.write(0x02);             // Write the register address (0x00)
-  data = 0xFF; // Setting Mode to Mode 1
-  Wire.write(data);             // Write data to the register
-  Wire.endTransmission();       // End transmission
-
-  // Set Individual 8-bit Dot Current Setting
-  Wire.beginTransmission(0x41); // Start transmission to slave with address 0x40
-  Wire.write(0x00);             // Write the register address (0x00)
-  data = 0xFF; // Setting Mode to Mode 1
-  Wire.write(data);             // Write data to the register
-  Wire.endTransmission();       // End transmission
-
-  Wire.beginTransmission(0x45); // Start transmission to slave with address 0x40
-  Wire.write(0x00);             // Write the register address (0x00)
   data = 0xFF; // Setting Mode to Mode 1
   Wire.write(data);             // Write data to the register
   Wire.endTransmission();       // End transmission
@@ -167,20 +103,7 @@ void setup() {
     // Wire.write(data);
     Wire.write(0xFF);
     Wire.endTransmission();
-
-    Wire.beginTransmission(0x46);
-    Wire.write(0x02);
-    // data = i;
-    // Wire.write(data);
-    Wire.write(0xFF);
-    Wire.endTransmission();
   // }
-    // Wire.beginTransmission(0x42);
-    // Wire.write(0x00);
-    // // data = i;
-    // // Wire.write(data);
-    // Wire.write(0xFF);
-    // Wire.endTransmission();
 }
 
 void loop() {
@@ -191,17 +114,10 @@ void loop() {
   //   uint8_t data = i;
   //   Wire.write(data);
   //   Wire.endTransmission();
-
-  //   // Wire.beginTransmission(0x42);
-  //   // Wire.write(0x00);
-  //   // // data = i;
-  //   // Wire.write(data);
-  //   // Wire.endTransmission();
-    
   //   delay(10);
   // }
-  // digitalWrite(0, HIGH);
-  // delay(100);
-  // digitalWrite(0, LOW);
-  // delay(100);
+  digitalWrite(0, HIGH);
+  delay(100);
+  digitalWrite(0, LOW);
+  delay(100);
 }
