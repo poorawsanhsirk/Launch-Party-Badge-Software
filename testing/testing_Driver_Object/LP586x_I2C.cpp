@@ -9,19 +9,23 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
+SoftWire sw;
 LP586X_I2C::LP586X_I2C(uint8_t enablePin, uint8_t syncPin) {
     _enablePin = enablePin;
     // _ifsPin = ifsPin;
     _syncPin = syncPin;
     _currentSlaveAddr = 0;
+    // SoftWire sw;
 }
 
 void LP586X_I2C::begin(uint8_t sdaPin, uint8_t sclPin) {
     // Initialize I2C communication
     // Wire.initPins(5,4);
-    Wire.begin(sdaPin,sclPin);
-    Wire.setClock(I2C_FREQUENCY);
+    // SoftWire sw
+
+    sw.begin(sdaPin, sclPin, I2C_FREQUENCY);   
+    // Wire.begin(sdaPin,sclPin);
+    // Wire.setClock(I2C_FREQUENCY);
     
     // Configure pins
     pinMode(_enablePin, OUTPUT);
@@ -32,7 +36,7 @@ void LP586X_I2C::begin(uint8_t sdaPin, uint8_t sclPin) {
     digitalWrite(_syncPin, LOW);
     digitalWrite(_enablePin, LOW);  // Start with device disabled
     // delay(100);
-    delayMicroseconds(5);
+    delayMicroseconds(500);
     digitalWrite(_enablePin, HIGH);  // Start with device disabled
     // digitalWrite(_ifsPin, LOW);     // Default to I2C mode
     // delay(1);
@@ -47,17 +51,21 @@ void LP586X_I2C::setSlave(uint8_t slaveAddr5bit, uint16_t regAddr10bit) {
 void LP586X_I2C::writeRegister(uint16_t regAddr10bit, uint8_t data) {
     uint8_t regAddr8bit = regAddr10bit & 0xFF;
     
-    // Start transmission to the current slave address
-    Wire.beginTransmission(_currentSlaveAddr);
+    // // Start transmission to the current slave address
+    // Wire.beginTransmission(_currentSlaveAddr);
     
-    // Send register address
-    Wire.write(regAddr8bit);
+    // // Send register address
+    // Wire.write(regAddr8bit);
     
-    // Send data
-    Wire.write(data);
+    // // Send data
+    // Wire.write(data);
     
-    // End transmission
-    Wire.endTransmission();
+    // // End transmission
+    // Wire.endTransmission();
+    sw.beginTransmission(_currentSlaveAddr);
+    sw.write(regAddr8bit);
+    sw.write(data);
+    sw.endTransmission();
     
     // Small delay for device processing
     delayMicroseconds(5);
@@ -65,20 +73,33 @@ void LP586X_I2C::writeRegister(uint16_t regAddr10bit, uint8_t data) {
 
 uint8_t LP586X_I2C::readRegister(uint8_t regAddr10bit) {
     uint8_t regAddr8bit = regAddr10bit & 0xFF;
-    uint8_t value = 0;
+    uint8_t value;
     
+    // // Write the register address first
+    // Wire.beginTransmission(_currentSlaveAddr);
+    // Wire.write(regAddr8bit);
+    // Wire.endTransmission(false);
+    
+    // // Request 2 bytes from the slave device
+    // Wire.requestFrom(_currentSlaveAddr, 1);
+    
+    // // Check if 2 bytes are available
+    // if (Wire.available()) {
+    //     // Read MSB first
+    //     value = Wire.read();
+    // }
     // Write the register address first
-    Wire.beginTransmission(_currentSlaveAddr);
-    Wire.write(regAddr8bit);
-    Wire.endTransmission(false);
+    sw.beginTransmission(_currentSlaveAddr);
+    sw.write(regAddr8bit);
+    sw.endTransmission(false);
     
     // Request 2 bytes from the slave device
-    Wire.requestFrom(_currentSlaveAddr, 1);
+    sw.requestFrom(_currentSlaveAddr, 1);
     
     // Check if 2 bytes are available
-    if (Wire.available()) {
+    if (sw.available()) {
         // Read MSB first
-        value = Wire.read();
+        value = sw.read();
     }
     
     return value;

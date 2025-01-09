@@ -19,7 +19,7 @@ LP586x Driver_1(SLAVE_ADDRESS1, sdaPin, sclPin, ENABLE_PIN, SYNC_PIN);
 
 void setup() {
     Serial.begin(115200);
-
+    pinMode(3, INPUT);
     // Checking Register Value after initialisation
     uint8_t data = Driver_1.LP586X_i2c_obj.readRegister(Chip_Enable_Register);
     Serial.print("Register Value: ");
@@ -47,15 +47,22 @@ void setup() {
     Serial.print("Register Value: ");
     Serial.print(data); // Data needs to be 0x5E
 
+    while(1) {
+      uint8_t data;
+      data = Driver_1.LP586X_i2c_obj.readRegister(Device_Initial_Register);
+      Serial.print("Register Value: ");
+      Serial.print(data); 
+      
+      if(digitalRead(3)){
+        Serial.print("Blah blah blah");
+      } else {
+        Serial.print("lahb");
+      }
+      delay(100);
+    }
+
 }
 
 void loop() {
-    for (uint8_t i = 0; i < 255; i++)
-    {
-        /* code */
-        // Lighting up all LEDs
-        Driver_1.DC_Color_All(i, i, i);
-        delay(10);
-    }
-    
+
 }

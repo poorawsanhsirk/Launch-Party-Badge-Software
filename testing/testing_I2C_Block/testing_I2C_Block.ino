@@ -84,5 +84,9 @@ void setup() {
 }
 
 void loop() {
-
+    // Reading Default Value of Device_Initial_Register
+    int data =test_driver.readRegister(Device_Initial_Register);
+    Serial.print("Register Value: ");
+    Serial.print(data);
+    delay(1000);
 }

@@ -9,6 +9,9 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+// #include <SoftWire.h>
+// #include <AsyncDelay.h>
+#include "ESP32_SoftWire.h"
 
 #define I2C_FREQUENCY  400000
 

@@ -10,14 +10,15 @@
 #include <stdbool.h>
 
 
-LP586X_I2C::LP586X_I2C(uint8_t enablePin, uint8_t syncPin) {
+LP586X_I2C::LP586X_I2C(uint8_t slaveAddress, uint8_t enablePin, uint8_t syncPin) {
     _enablePin = enablePin;
     // _ifsPin = ifsPin;
     _syncPin = syncPin;
     _currentSlaveAddr = 0;
+    _slaveAddr5bit = slaveAddress;
 }
 
-void LP586X_I2C::begin(uint8_t sdaPin, uint8_t sclPin) {
+void LP586X_I2C::interfaceInit(uint8_t sdaPin, uint8_t sclPin) {
     // Initialize I2C communication
     // Wire.initPins(5,4);
     Wire.begin(sdaPin,sclPin);
@@ -37,13 +38,11 @@ void LP586X_I2C::begin(uint8_t sdaPin, uint8_t sclPin) {
     // delay(1);
 }
 
-void LP586X_I2C::setSlave(uint8_t slaveAddr5bit, uint16_t regAddr10bit) {
-    // Convert 5-bit slave address to 8-bit I2C format
-    // Upper bits of regAddr10bit are included in slave address
-    _currentSlaveAddr = (slaveAddr5bit << 2) + (regAddr10bit >> 8);
-}
 
 void LP586X_I2C::writeRegister(uint16_t regAddr10bit, uint8_t data) {
+    // Form Address Byte-1
+    _currentSlaveAddr = (_slaveAddr5bit << 2) + (regAddr10bit >> 8);
+    // Form Address Byte-2
     uint8_t regAddr8bit = regAddr10bit & 0xFF;
     
     // Start transmission to the current slave address
@@ -91,14 +90,6 @@ void LP586X_I2C::enableDevice() {
     digitalWrite(_enablePin, HIGH);
 }
 
-// void LP586X_I2C::setInterfaceI2C() {
-//     digitalWrite(_ifsPin, LOW);
-// }
-
-// void LP586X_I2C::setInterfaceSPI() {
-//     digitalWrite(_ifsPin, HIGH);
-// }
-
 void LP586X_I2C::initializeSync() {
     digitalWrite(_syncPin, LOW);
 }
@@ -108,3 +99,40 @@ void LP586X_I2C::sendSync() {
     delayMicroseconds(200);
     digitalWrite(_syncPin, LOW);
 }
+
+// Software Disable the LED Matrix Driver
+void LP586X_I2C::chip_Standby() {
+
+}
+
+// Software Enable the LED Matrix Driver
+void LP586X_I2C::chip_Normal() {
+
+}
+
+// Set Data Refresh Mode
+/**
+ * Mode-1: LED updates as soon as register is written to
+ * Mode-2: LED Updates when VSYNC is strobed. 8-bit PWM
+ * Mode-3: LED Updates when VSYNC is strobed. 16-bit PWM
+ */
+void LP586X_I2C::setDataRefreshMode(uint8_t Data_Ref_Mode) {
+
+}
+
+
+// void LP586X_I2C::setDeviceInitialRegister(uint8_t Max_Line, uint8_t Data_Ref_Mode, uint8_t PWM_Frequency) {
+
+// }
+
+// void LP586X_I2C::setDeviceConfigReg1() {
+
+// }
+
+// void LP586X_I2C::setDeviceConfigReg2() {
+
+// }
+
+// void LP586X_I2C::setDeviceConfigReg3() {
+
+// }
