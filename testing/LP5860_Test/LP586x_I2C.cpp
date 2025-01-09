@@ -120,6 +120,27 @@ void LP586X_I2C::setDataRefreshMode(uint8_t Data_Ref_Mode) {
 
 }
 
+// Analog Current Dimming Functions
+
+
+
+
+
+
+
+// PWM Based Dimming Functions
+
+
+
+
+
+// Set Individual LED Colour
+
+
+
+// Set Entire 66 LED Frame
+
+
 
 // void LP586X_I2C::setDeviceInitialRegister(uint8_t Max_Line, uint8_t Data_Ref_Mode, uint8_t PWM_Frequency) {
 
