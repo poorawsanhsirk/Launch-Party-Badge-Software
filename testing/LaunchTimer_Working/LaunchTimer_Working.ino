@@ -30,8 +30,8 @@ LP586X_I2C Drivers[] = {
 };
 
 // WiFi Credentials
-const char* ssid = "TheSpaceBoys";
-const char* password = "Pixxel42";
+const char* ssid = "Your SSID";
+const char* password = "Your Password";
 
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 19800;    // IST offset: (5 hours * 3600) + (30 minutes * 60) = 19800 seconds
