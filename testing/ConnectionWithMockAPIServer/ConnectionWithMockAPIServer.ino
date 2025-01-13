@@ -1,4 +1,6 @@
 #include <WiFi.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
 
 
 #include "LP586x_I2C.h"
@@ -32,34 +34,37 @@ LP586X_I2C Drivers[] = {
 
 // WiFi Credentials
 const char* ssid = "Pixxel-Guest";
-const char* password = "";
+const char* password = "Pixxel@guest";
 
 const char* ntpServer = "pool.ntp.org";
-const long gmtOffset_sec = 19800;    // IST offset: (5 hours * 3600) + (30 minutes * 60) = 19800 seconds
+const long gmtOffset_sec = 0;    // IST offset: (5 hours * 3600) + (30 minutes * 60) = 19800 seconds
 const int daylightOffset_sec = 0;    // India doesn't use DST, so set to 0
 
 const int NTP_UPDATE_INTERVAL = 3600000;  // Update NTP every hour (in milliseconds)
 unsigned long lastNTPUpdate = 0;
 
+
+// API EndPoint Details
+const char* apiEndpoint = "https://firefly-launch.free.beeceptor.com";
 // Target Launch Time (24-hour format)
-const int LAUNCH_TARGET_HOUR = 16;    // 4:00 AM
-const int LAUNCH_TARGET_MIN = 26;
-const int LAUNCH_TARGET_SEC = 0;
+volatile int LAUNCH_TARGET_HOUR = 0;    // 4:00 AM
+volatile int LAUNCH_TARGET_MIN = 0;
+volatile int LAUNCH_TARGET_SEC = 0;
 
 // Target Inception Time for FF-1 (24-Hour Format)
-const int FF1_INJECTION_TARGET_HOUR = 16;
-const int FF1_INJECTION_TARGET_MIN = 27;
-const int FF1_INJECTION_TARGET_SEC = 30;
+volatile int FF1_INJECTION_TARGET_HOUR = 0;
+volatile int FF1_INJECTION_TARGET_MIN = 0;
+volatile int FF1_INJECTION_TARGET_SEC = 0;
 
 // Target Inception Time for FF-1 (24-Hour Format)
-const int FF2_INJECTION_TARGET_HOUR = 16;
-const int FF2_INJECTION_TARGET_MIN = 28;
-const int FF2_INJECTION_TARGET_SEC = 0;
+volatile int FF2_INJECTION_TARGET_HOUR = 0;
+volatile int FF2_INJECTION_TARGET_MIN = 0;
+volatile int FF2_INJECTION_TARGET_SEC = 0;
 
 // Target Inception Time for FF-1 (24-Hour Format)
-const int FF3_INJECTION_TARGET_HOUR = 16;
-const int FF3_INJECTION_TARGET_MIN = 28;
-const int FF3_INJECTION_TARGET_SEC = 30;
+volatile int FF3_INJECTION_TARGET_HOUR = 0;
+volatile int FF3_INJECTION_TARGET_MIN = 0;
+volatile int FF3_INJECTION_TARGET_SEC = 0;
 
 
 // Global time structure
@@ -91,6 +96,8 @@ void setupTime();
 void LaunchTimer();
 void flashGreen();
 void transitionAnimation();
+bool GetLaunchParameters();
+void extractTime(const String& iso8601Time, volatile int& hour, volatile int& minute, volatile int& second);
 
 
 void setup() {
@@ -107,6 +114,13 @@ void setup() {
     /**
      * Add Code to get data from the Server
      */
+
+    if(GetLaunchParameters()){
+      Serial.print("Got Latest Launch Parameters");
+    }
+
+    // Setup Time 
+    setupTime();
 
 
     
@@ -172,25 +186,25 @@ void loop() {
    * 4) Time to Sunlit/Eclipse
    * 5) Any other parameter that can be represented as a bar graph and can be fetched from the local server
    */
-  // switch (menuState)
-  // {
-  // case LAUNCH_TIMER:
-  //   /* code */
-  //   LaunchTimer();
-  //   break;
-  // case INJECTION_TIMERS:
-  //   InjectionTimers();
-  //   break;
-  // case TRANSITION:
-  //   transitionAnimation();
-  //   break;
-  // default:
-  //   break;
-  // }
-  if ((timeinfo.tm_hour*3600 + timeinfo.tm_min*60 + timeinfo.tm_sec) > LAUNCH_TARGET_HOUR*3600 + LAUNCH_TARGET_MIN*60 + LAUNCH_TARGET_SEC) {
-    Launch_Done = 1;
+  switch (menuState)
+  {
+  case LAUNCH_TIMER:
+    /* code */
+    LaunchTimer();
+    break;
+  case INJECTION_TIMERS:
+    InjectionTimers();
+    break;
+  case TRANSITION:
+    transitionAnimation();
+    break;
+  default:
+    break;
   }
-  InjectionTimers();
+  // if ((timeinfo.tm_hour*3600 + timeinfo.tm_min*60 + timeinfo.tm_sec) > LAUNCH_TARGET_HOUR*3600 + LAUNCH_TARGET_MIN*60 + LAUNCH_TARGET_SEC) {
+  //   Launch_Done = 1;
+  // }
+  // InjectionTimers();
 
 }
 
@@ -229,20 +243,60 @@ void setupTime() {
     // Serial.print(timeRemainingToLaunch);
 }
 
+bool GetLaunchParameters(){
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(apiEndpoint);  // Specify API Endpoint
+    int httpResponseCode = http.GET();  // Make GET Request
+
+    if (httpResponseCode == 200) {
+      String response = http.getString();
+      Serial.println("Response: " + response);
+
+      // Parse the JSON Response
+      DynamicJsonDocument doc(1024);    // Adjust Size
+      DeserializationError error = deserializeJson(doc, response);
+
+      if (!error) {
+        // Extract and process launch and injection times
+        extractTime(doc["ff1"]["launch_time"].as<String>(), LAUNCH_TARGET_HOUR, LAUNCH_TARGET_MIN, LAUNCH_TARGET_SEC);
+        extractTime(doc["ff1"]["injection_time"].as<String>(), FF1_INJECTION_TARGET_HOUR, FF1_INJECTION_TARGET_MIN, FF1_INJECTION_TARGET_SEC);
+        extractTime(doc["ff2"]["injection_time"].as<String>(), FF2_INJECTION_TARGET_HOUR, FF2_INJECTION_TARGET_MIN, FF2_INJECTION_TARGET_SEC);
+        extractTime(doc["ff3"]["injection_time"].as<String>(), FF3_INJECTION_TARGET_HOUR, FF3_INJECTION_TARGET_MIN, FF3_INJECTION_TARGET_SEC);
+
+        // Print the extracted times
+        Serial.printf("Launch Time: %02d:%02d:%02d\n", LAUNCH_TARGET_HOUR, LAUNCH_TARGET_MIN, LAUNCH_TARGET_SEC);
+        Serial.printf("FF1 Injection Time: %02d:%02d:%02d\n", FF1_INJECTION_TARGET_HOUR, FF1_INJECTION_TARGET_MIN, FF1_INJECTION_TARGET_SEC);
+        Serial.printf("FF2 Injection Time: %02d:%02d:%02d\n", FF2_INJECTION_TARGET_HOUR, FF2_INJECTION_TARGET_MIN, FF2_INJECTION_TARGET_SEC);
+        Serial.printf("FF3 Injection Time: %02d:%02d:%02d\n", FF3_INJECTION_TARGET_HOUR, FF3_INJECTION_TARGET_MIN, FF3_INJECTION_TARGET_SEC);
+      } else {
+        Serial.println("Failed to parse JSON");
+      }
+    } else {
+      Serial.println("HTTP GET Request failed, error: " + String(httpResponseCode));
+    }
+    http.end(); // Free Resources
+    return 1;
+  }
+}
+
+void extractTime(const String& iso8601Time, volatile int& hour, volatile int& minute, volatile int& second) {
+  // Parse ISO 8601 format: "2025-01-13T13:00:00Z"
+  hour = iso8601Time.substring(11, 13).toInt();  // Extract hours
+  minute = iso8601Time.substring(14, 16).toInt(); // Extract minutes
+  second = iso8601Time.substring(17, 19).toInt(); // Extract seconds
+}
+
 void LaunchTimer() {
-  int currentSeconds = timeinfo.tm_hour*3600 + timeinfo.tm_min*60 + timeinfo.tm_sec;
-  int targetSecondsToLaunch = LAUNCH_TARGET_HOUR*3600 + LAUNCH_TARGET_MIN*60 + LAUNCH_TARGET_SEC;
+  volatile float currentSeconds = timeinfo.tm_hour*3600 + timeinfo.tm_min*60 + timeinfo.tm_sec;
+  volatile float targetSecondsToLaunch = LAUNCH_TARGET_HOUR*3600 + LAUNCH_TARGET_MIN*60 + LAUNCH_TARGET_SEC;
   int LaunchDone = 0;
 
   if(targetSecondsToLaunch <= currentSeconds){
     targetSecondsToLaunch += 24*3600;         // Target is tomorrow
-    if (eventTransition == 1){
-      LaunchDone = 1;  
-      eventTransition = 0;
-    }
   }
 
-  long timeRemainingToLaunch = targetSecondsToLaunch - currentSeconds;
+  volatile float timeRemainingToLaunch = targetSecondsToLaunch - currentSeconds;
 
   /**
    * State Transition Logic
@@ -255,42 +309,24 @@ void LaunchTimer() {
       menuState = 2;
     }
   }
-  // static int buttonState = HIGH;
-  // static int lastButtonState = HIGH;
-  // static unsigned long lastDebounceTime = 0;
-  // const unsigned long debounceDelay = 50;
-
-  // // int buttonPress = digitalRead(9);
-  // if(buttonPress != lastButtonState){ // Check if button state has changed
-  //   lastDebounceTime = millis();      // Reset the debounce timer
-  // }
-  // if((millis() - lastDebounceTime) > debounceDelay) {
-  //   if(buttonPress != buttonState) {
-  //     buttonState = buttonPress;
-
-  //     // If the button state is HIGH, it means button is pressed
-  //     if (buttonState == LOW) {
-  //       menuState = 2;
-  //     }
-  //   }
-  // }
-
+  
   /**
    * TODO: Need to figure out the Launch Transition Event Handling properly. Spaghetti Logic at the moment
    */
-  if (timeRemainingToLaunch <= INTIMATION_TIME){
+  if (timeRemainingToLaunch <= INTIMATION_TIME && timeRemainingToLaunch > 1){
     flashGreen();
     Launch_Done = 1;
     return;
-  } else if (timeRemainingToLaunch == 0) {
-    eventTransition = 1;
-  } else if (LaunchDone == 1){
+  } else if (timeRemainingToLaunch <= 0) {
+    Launch_Done = 1;
+  } else if (Launch_Done == 1){
     for (int i = 0 ; i < 4 ; i++) {
       Drivers[i].setBlockColour(0, 0, 255);
     }
     return;
   } else {
-    float progress = (((float)timeRemainingToLaunchSincePowerON - (float)timeRemainingToLaunch)/(float)timeRemainingToLaunchSincePowerON);
+    // volatile float progress = (((float)timeRemainingToLaunchSincePowerON - (float)timeRemainingToLaunch)/(float)timeRemainingToLaunchSincePowerON);
+    volatile float progress = (timeRemainingToLaunchSincePowerON - timeRemainingToLaunch)/timeRemainingToLaunchSincePowerON;
     Serial.print(progress);
     if (progress < 0) {
       flashGreen();
@@ -355,7 +391,7 @@ void LaunchTimer() {
       }
       delay(1000);
       return;
-    } else if (numberOfRowsLIT >18 && numberOfRowsLIT <=23) {
+    } else if (numberOfRowsLIT >18 && numberOfRowsLIT <=24) {
       for (int i = 0; i <=6; i++) {
         Drivers[0].lightNumberOfRows(i , 0x0000ff00);
         delay(100);
