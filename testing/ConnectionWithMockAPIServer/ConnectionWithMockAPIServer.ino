@@ -108,8 +108,8 @@ void setup() {
     // Connect to Wifi
     connectToWifi();
 
-    // Setup Time 
-    setupTime();
+    // // Setup Time 
+    // setupTime();
 
     /**
      * Add Code to get data from the Server
@@ -156,6 +156,13 @@ void setup() {
      * Entering Launch Timer State by Default
      */
     menuState = LAUNCH_TIMER;
+
+    // for (int i = 0 ; i < 4 ; i++) {
+    //   Drivers[i].setBlockColour(0, 0, 255);
+    //   delay(1000);
+    //   Drivers[i].setBlockColour(0, 0, 0);
+    //   delay(100);
+    // }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }
