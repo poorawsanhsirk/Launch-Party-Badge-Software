@@ -1,0 +1,5 @@
+# Ignore Backups folder
+*-backups/
+
+# Ignore cached files
+*.lck
