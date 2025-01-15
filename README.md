@@ -87,3 +87,5 @@ Also, there might be some issues when there are around 200 devices in the wild s
 ![Delivery Box](./assets/IMG_0484.jpg)
 ![PCB Array](./assets/IMG_0496.jpg)
 ![PCB Array1](./assets/IMG_0497.jpg)
+![Glam Shot](./assets/Glam_Shots.jpeg)
+![SweatShop Scenes](./assets/IMG_4311.jpg)
