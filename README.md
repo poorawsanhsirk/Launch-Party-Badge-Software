@@ -13,6 +13,32 @@ Psst...Psst, you can build a Firefly Themed Table Clock as a starter project.
 
 
 ---
+## Instructions for Programming and developing your own code
+
+1. **Install Arduino IDE on your local machine**
+   - ![Link](https://www.arduino.cc/en/software)
+2. **Clone this repository on your local machine**
+   - If you have Git installed, you can just used `git clone <url>`
+   - If you dont have Git install, consider installing Git, it will change your life.
+   - If you are still hell-bent on not changing your life, you could just download this repo as a .zip folder and extract it
+3. **Navigate to Relevant Folder**
+   - After the launch party, the code in release/Version2_LowPower will not work as it requires a connection to Office WiFi and a server to ping.
+   - However, you can flash your own code and make the ESP32 do whatever you want. You could re-use the Driver I have written for the LED Matrix Drivers in order to display something
+   - If you just want the LEDs to light up and do some fun animations, you could try programming your badge with the `release/Demonstration' firmware
+4. Program your badge with the firmware that you want (steps below assume that you want to program the Demonstration code)
+   - Connect your badge to your PC/Laptop using a USB-C Cable. This cable provides both power and data connection to the ESP32.
+   - Open Arduino IDE and open the Demonstration.ino file by going to File->Open in the IDE Menubar
+   - If this is the first time you have installed Arduino IDE, you will have to install the ESP32 Board drivers. Open Board Manager in Arduino IDE and search for ESP32.
+   - After installing relevant drivers, your badge will get recognised by the IDE. Please select ESP32C3-Dev Module as your board type and select the correct COM Port
+   - Now you are ready to program the badge. Click on the Upload Button in the Arduino IDE. This will compile and flash your badge with the Demonstration Firmware.
+5. The Demonstration Firmware does the following animations
+   - Blue Progress Bar to simulate Launch Countdown
+   - Green LED Flashing
+   - Blue LED Flashing
+   - Injection Timer Simulation
+   - Injection Intimation Simulation
+You could cycle through each animation by pressing and holding the UP Button
+---
 ## Installation & Usage
 1. **Power ON the Badge**:
    - Connect the provided 9V Battery to the Battery Connector present on the board.
